@@ -1,81 +1,48 @@
-/* =========================================================
-   RAY
-   INTERACTION SCRIPT
-   ========================================================= */
-
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
-
 const backgroundMusic = document.getElementById("backgroundMusic");
 
 const musicToggle = document.querySelector(".music-toggle");
-
 const musicText = document.querySelector(".music-text");
-
 const musicSymbol = document.querySelector(".music-symbol");
 
 const themeToggle = document.querySelector(".theme-toggle");
-
 const themeText = document.querySelector(".theme-text");
-
 const themeSymbol = document.querySelector(".theme-symbol");
 
-/* =========================================================
-   MUSIC
-   ========================================================= */
+if (musicToggle && backgroundMusic) {
+  musicToggle.addEventListener("click", () => {
+    if (backgroundMusic.paused) {
+      backgroundMusic
+        .play()
+        .then(() => {
+          musicText.textContent = "sound on";
+          musicSymbol.textContent = "♫";
+        })
+        .catch(() => {
+          musicText.textContent = "sound off";
+          musicSymbol.textContent = "♫";
+        });
+    } else {
+      backgroundMusic.pause();
 
-musicToggle.addEventListener("click", () => {
-  if (backgroundMusic.paused) {
-    backgroundMusic
-      .play()
-      .then(() => {
-        musicText.textContent = "sound on";
+      musicText.textContent = "sound off";
+      musicSymbol.textContent = "♫";
+    }
+  });
+}
 
-        musicSymbol.textContent = "♫";
-      })
-      .catch(() => {
-        console.log("Browser menolak autoplay audio.");
-      });
-  } else {
-    backgroundMusic.pause();
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
 
-    musicText.textContent = "sound off";
+    const isDark = document.body.classList.contains("dark");
 
-    musicSymbol.textContent = "♫";
-  }
-});
+    themeText.textContent = isDark ? "dark" : "light";
 
-/* =========================================================
-   THEME
-   ========================================================= */
+    themeSymbol.textContent = isDark ? "☾" : "☼";
 
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-
-  const isDark = document.body.classList.contains("dark");
-
-  if (isDark) {
-    themeText.textContent = "dark";
-
-    themeSymbol.textContent = "☾";
-  } else {
-    themeText.textContent = "light";
-
-    themeSymbol.textContent = "☼";
-  }
-
-  /*
-        Simpan pilihan tema
-        ke localStorage.
-    */
-
-  localStorage.setItem("ray-theme", isDark ? "dark" : "light");
-});
-
-/* =========================================================
-   LOAD SAVED THEME
-   ========================================================= */
+    localStorage.setItem("ray-theme", isDark ? "dark" : "light");
+  });
+}
 
 const savedTheme = localStorage.getItem("ray-theme");
 
@@ -83,17 +50,10 @@ if (savedTheme === "dark") {
   document.body.classList.add("dark");
 
   themeText.textContent = "dark";
-
   themeSymbol.textContent = "☾";
 }
 
-/* =========================================================
-   IMAGE REVEAL
-   ========================================================= */
-
-const images = document.querySelectorAll(
-  ".hero-image, .thing-card, .memory, .letter-inner, .final-section",
-);
+const revealElements = document.querySelectorAll(".reveal");
 
 const revealObserver = new IntersectionObserver(
   (entries) => {
@@ -110,18 +70,16 @@ const revealObserver = new IntersectionObserver(
   },
 );
 
-images.forEach((element) => {
+revealElements.forEach((element) => {
   revealObserver.observe(element);
 });
 
-/* =========================================================
-   STOP MUSIC WHEN PAGE IS HIDDEN
-   ========================================================= */
-
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
+  if (document.hidden && backgroundMusic) {
     backgroundMusic.pause();
 
-    musicText.textContent = "sound off";
+    if (musicText) {
+      musicText.textContent = "sound off";
+    }
   }
 });
